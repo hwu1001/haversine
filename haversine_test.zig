@@ -69,3 +69,39 @@ test "Johannesburg, South Africa to Jakarta, Indonesia" {
     const dist = try haversine.calculateEarthDistance(johannesburg, jakarta);
     testing.expect(math.approxEq(f64, dist, 8586.494573575452, epsilon));
 }
+
+test "Error on invalid radius" {
+    const coord1 = haversine.LatLng{
+        .lat = 5.0,
+        .lng = 5.0,
+    };
+    const coord2 = haversine.LatLng{
+        .lat = 0.0,
+        .lng = 0.0,
+    };
+    testing.expectError(error.InvalidRadius, haversine.calculateDistance(coord1, coord2, -1.0));
+}
+
+test "Invalid latitude on coordinate 1" {
+    const coord1 = haversine.LatLng{
+        .lat = -100.0,
+        .lng = 5.0,
+    };
+    const coord2 = haversine.LatLng{
+        .lat = 0.0,
+        .lng = 0.0,
+    };
+    testing.expectError(error.InvalidLatitude, haversine.calculateEarthDistance(coord1, coord2));
+}
+
+test "Invalid longitude on coordinate 1" {
+    const coord1 = haversine.LatLng{
+        .lat = 5.0,
+        .lng = 200.0,
+    };
+    const coord2 = haversine.LatLng{
+        .lat = 0.0,
+        .lng = 0.0,
+    };
+    testing.expectError(error.InvalidLongitude, haversine.calculateEarthDistance(coord1, coord2));
+}
