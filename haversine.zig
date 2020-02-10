@@ -2,29 +2,22 @@ const std = @import("std");
 const math = std.math;
 const testing = std.testing;
 
-pub const InvalidCoordinate = error{
-    InvalidLatitude,
-    InvalidLongitude,
-};
-
 // Mean Earth radius - https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
 // Estimation by International Union of Geodesy and Geophysics - this value
 // is apparently not agreed upon globally per
 // https://nssdc.gsfc.nasa.gov/planetary/factsheet/fact_notes.html
 const mean_earth_radius = 6371.0088;
 
-pub const InvalidRadius = error.InvalidRadius;
-
 pub const LatLng = struct {
     lat: f64,
     lng: f64,
 
-    pub fn validate(self: *const LatLng) InvalidCoordinate!void {
+    pub fn validate(self: *const LatLng) !void {
         if (self.lat < -90.0 or self.lat > 90.0) {
-            return InvalidCoordinate.InvalidLatitude;
+            return error.InvalidLatitude;
         }
         if (self.lng < -180.0 or self.lng > 180) {
-            return InvalidCoordinate.InvalidLongitude;
+            return error.InvalidLongitude;
         }
 
         return;
@@ -37,7 +30,7 @@ fn degreesToRadians(degrees: f64) f64 {
 
 pub fn calculateDistance(coord1: LatLng, coord2: LatLng, radius: f64) !f64 {
     if (radius <= 0.0) {
-        return InvalidRadius;
+        return error.InvalidRadius;
     }
     try coord1.validate();
     try coord2.validate();
